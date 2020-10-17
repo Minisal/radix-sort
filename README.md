@@ -6,7 +6,7 @@ This is my project task demonstrating how to implement radix sort in both serial
 
 You can check the compute capability corresponding to your GPU [here](https://developer.nvidia.com/cuda-gpus).
 
-## How to run
+## How to build
 Just compile the single-file code with `nvcc`. The compiler is already bundled with [CUDA SDK](https://developer.nvidia.com/cuda-downloads).
 
 ### References

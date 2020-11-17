@@ -13,9 +13,6 @@
 #define WARP_MASK 0xffffffff
 #define NUM_RADICES 256
 
-//#define DEBUG_HOST_IMPL
-//#define DEBUG_DEVICE_IMPL
-//#define VALIDATE_FULL
 #define MEASURE_TIME_HOST
 #define MEASURE_TIME_DEVICE
 
@@ -79,7 +76,7 @@ __global__ void radixSumScanKernel(unsigned int* inout_counters, unsigned int* o
     unsigned int warpIdx = threadIdx.x >> 5;
     unsigned int laneIdx = threadIdx.x & 0x1f;
 
-    //  idebtify assigned worked radix and pointer to the array of counters corresponding to the radix
+    //  identify assigned worked radix and pointer to the array of counters corresponding to the radix
     unsigned int radix = blockIdx.x;
     unsigned int* counters = inout_counters + radix * numBlocks * WARP_SIZE;
 
@@ -656,54 +653,5 @@ int main()
     sort_testing(0x1 << 16);
     sort_testing(0x1 << 18);
     sort_testing(0x1 << 20);
-
-/*
-    std::cout << "Completed!" << std::endl;
-
-    int valid = 0;
-
-#ifdef VALIDATE_FULL
-    //  full validation
-    std::cout << "Full validation :\nMismatch index (H vs D) at " << std::endl;
-    for (unsigned int i = 0; i < numElements; i++)
-    {
-        if (numbers[i] != numbers_copy[i])
-        {
-            std::cout << i << " ( " << numbers[i] << " at " << indices[i] << " vs "
-                << numbers_copy[i] << " at " << indices_copy[i] << " ), \n";
-            valid = 1;
-        }
-    }
-    std::cout << std::endl;
-#else
-    //  validate the result stochastically
-    std::cout << "Stochastic validation :\nMismatch index(H,D) at " << std::endl;
-    std::uniform_int_distribution<unsigned int> distribution_validate(1, numElements - 1);
-    for (std::size_t i = 0; i < 100; i++)
-    {
-        std::size_t sampleIndex = distribution_validate(generator);
-        if (numbers[sampleIndex] != numbers_copy[sampleIndex])
-        {
-            std::cout << i << " ( " << numbers[i] << " at " << indices[i] << " vs "
-                << numbers_copy[i] << " at " << indices_copy[i] << " ), \n";
-            valid = 1;
-        }
-    }
-#endif
-
-    if (valid)
-        printf("There is a bug somewhere.\n");
-    else
-        printf("Congrats! All goes well.\n");
-
-    // cudaDeviceReset must be called before exiting in order for profiling and
-    // tracing tools such as Nsight and Visual Profiler to show complete traces.
-    cudaError_t cudaStatus = cudaDeviceReset();
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaDeviceReset failed!");
-        return 1;
-    }
-*/
-
     return 0;
 }

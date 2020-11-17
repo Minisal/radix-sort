@@ -11,6 +11,7 @@ You can check the compute capability corresponding to your GPU [here](https://de
 nvcc radixsort.cu -o radixsort.o
 ./radixsort.o
 ```
+## Radixsort exec time comparison
 |magnitude|CPU time(us)|GPU time(us)|
 |---------|--------|--------|
 |2^10(10^3)|165|197|

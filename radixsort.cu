@@ -330,7 +330,7 @@ int radixsort_simple(unsigned int* numbers, int* indices, std::size_t numElement
 #ifdef MEASURE_TIME_HOST
     auto time_stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_stop - time_start);
-    std::cout << "Radixsort (H) exec time : " << duration.count() << "us." << std::endl;
+    std::cout << "CPU: " << duration.count() << "us" << std::endl;
 #endif
 
     //	free auxiliary arrays
@@ -581,7 +581,7 @@ int radixsort_cuda(unsigned int* numbers, int* indices, std::size_t numElements)
 #ifdef MEASURE_TIME_DEVICE
     auto time_stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_stop - time_start);
-    std::cout << "Radixsort (D) exec time : " << duration.count() << "us." << std::endl;
+    std::cout << "GPU: " << duration.count() << "us" << std::endl;
 
     std::cout << "Per kernel :" << std::endl;
     float kernelExecTimes[4];
@@ -611,10 +611,8 @@ int radixsort_cuda(unsigned int* numbers, int* indices, std::size_t numElements)
     return 0;
 }
 
-int main()
+int sort_testing(std::size_t numElements)
 {
-    //  setup the sample input array
-    std::size_t numElements = 0x1 << 20;
     std::vector<unsigned int> numbers(numElements);
     std::vector<int> indices(numElements);
     std::iota(indices.begin(), indices.end(), 0);
@@ -631,21 +629,35 @@ int main()
     std::vector<int> indices_copy(indices);
 
     //  sorting by CPU
-    std::cout << "Running CPU Implementation... " << std::endl;
+    std::cout << "numbers: " << numElements << std::endl;
+    std::cout << "Radixsort exec time :" << numElements << std::endl;
     result = ::radixsort_simple(numbers.data(), indices.data(), numElements);
     if (result != 0) {
         fprintf(stderr, "radixsort (CPU) failed!");
         return 1;
     }
-    std::cout << "Completed!" << std::endl;
+    // std::cout << "Completed!" << std::endl;
 
     //  sorting by GPU
-    std::cout << "Running GPU (CUDA) Implementation... " << std::endl;
+    // std::cout << "Running GPU (CUDA) Implementation... " << std::endl;
     result = ::radixsort_cuda(numbers_copy.data(), indices_copy.data(), numElements);
     if (result != 0) {
         fprintf(stderr, "radixsort (CUDA) failed!");
         return 1;
     }
+    return 0;
+}
+
+int main()
+{
+    sort_testing(0x1 << 10);
+    sort_testing(0x1 << 12);
+    sort_testing(0x1 << 14);
+    sort_testing(0x1 << 16);
+    sort_testing(0x1 << 18);
+    sort_testing(0x1 << 20);
+
+/*
     std::cout << "Completed!" << std::endl;
 
     int valid = 0;
@@ -664,8 +676,8 @@ int main()
     }
     std::cout << std::endl;
 #else
-    //  validate the result stocastically
-    std::cout << "Stocastic validation :\nMismatch index(H,D) at " << std::endl;
+    //  validate the result stochastically
+    std::cout << "Stochastic validation :\nMismatch index(H,D) at " << std::endl;
     std::uniform_int_distribution<unsigned int> distribution_validate(1, numElements - 1);
     for (std::size_t i = 0; i < 100; i++)
     {
@@ -691,6 +703,7 @@ int main()
         fprintf(stderr, "cudaDeviceReset failed!");
         return 1;
     }
+*/
 
     return 0;
 }
